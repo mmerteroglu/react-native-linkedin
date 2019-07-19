@@ -122,7 +122,7 @@ export const getPayloadForToken: (Props & { code: string }) => string = ({
     client_secret: clientSecret,
   })
 
-export const fetchToken: string => Promise<LinkedInToken> = async payload => {
+export const fetchToken: string => Promise < LinkedInToken > = async payload => {
   const response = await fetch(ACCESS_TOKEN_URL, {
     method: 'POST',
     headers: {
@@ -262,7 +262,7 @@ export default class LinkedInModal extends React.Component {
   getAuthorizationUrl: void => string = () =>
     getAuthorizationUrl({ ...this.props, authState: this.state.authState })
 
-  getAccessToken: string => Promise<LinkedInToken | {}> = async (code: string) => {
+  getAccessToken: string => Promise<LinkedInToken | {} > = async (code: string) => {
     const { onError } = this.props
     const payload: string = getPayloadForToken({ ...this.props, code })
     const token = await fetchToken(payload)
@@ -273,82 +273,84 @@ export default class LinkedInModal extends React.Component {
     return token
   }
 
-  props: Props
+props: Props
 
-  close = () => {
-    const { onClose } = this.props
-    if (onClose) onClose()
-    this.setState({ modalVisible: false })
-  }
+close = () => {
+  const { onClose } = this.props
+  if (onClose) onClose()
+  this.setState({ modalVisible: false })
+}
 
-  open = () => {
-    const { onOpen } = this.props
-    if (onOpen) onOpen()
-    this.setState({ modalVisible: true })
-  }
+open = () => {
+  const { onOpen } = this.props
+  if (onOpen) onOpen()
+  this.setState({ modalVisible: true })
+}
 
-  renderButton = () => {
-    const { renderButton, linkText } = this.props
-    if (renderButton) return renderButton()
-    return <Text>{linkText}</Text>
-  }
+renderButton = () => {
+  const { renderButton, linkText } = this.props
+  if (renderButton) return renderButton()
+  return (
+    <TouchableOpacity
+      accessibilityComponentType={'button'}
+      accessibilityTraits={['button']}
+      onPress={this.open}
+    >
+      <Text>{linkText}</Text>
+  </TouchableOpacity>
+  )
+}
 
-  renderClose = () => {
-    const { renderClose } = this.props
-    if (renderClose) return renderClose()
-    return (
-      // $DisableFlow
-      <Image source={require('./assets/x-white.png')} resizeMode="contain" />
-    )
-  }
+renderClose = () => {
+  const { renderClose } = this.props
+  if (renderClose) return renderClose()
+  return (
+    // $DisableFlow
+    <Image source={require('./assets/x-white.png')} resizeMode="contain" />
+  )
+}
 
-  renderWebview = () => {
-    const { modalVisible } = this.state
-    if (!modalVisible) return null
+renderWebview = () => {
+  const { modalVisible } = this.state
+  if (!modalVisible) return null
 
-    return (
-      <WebView
-        source={{ uri: this.getAuthorizationUrl() }}
-        onNavigationStateChange={this.onNavigationStateChange}
-        startInLoadingState
-        javaScriptEnabled
-        domStorageEnabled
-        injectedJavaScript={injectedJavaScript}
-      />
-    )
-  }
+  return (
+    <WebView
+      source={{ uri: this.getAuthorizationUrl() }}
+      onNavigationStateChange={this.onNavigationStateChange}
+      startInLoadingState
+      javaScriptEnabled
+      domStorageEnabled
+      injectedJavaScript={injectedJavaScript}
+    />
+  )
+}
 
-  render() {
-    const { modalVisible } = this.state
-    const { animationType, containerStyle, wrapperStyle, closeStyle } = this.props
-    return (
-      <View>
-        <TouchableOpacity
-          accessibilityComponentType={'button'}
-          accessibilityTraits={['button']}
-          onPress={this.open}
-        >
-          {this.renderButton()}
-        </TouchableOpacity>
-        <Modal
-          animationType={animationType}
-          transparent
-          visible={modalVisible}
-          onRequestClose={this.close}
-        >
-          <View style={[styles.constainer, containerStyle]}>
-            <View style={[styles.wrapper, wrapperStyle]}>{this.renderWebview()}</View>
-            <TouchableOpacity
-              onPress={this.close}
-              style={[styles.close, closeStyle]}
-              accessibilityComponentType={'button'}
-              accessibilityTraits={['button']}
-            >
-              {this.renderClose()}
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      </View>
-    )
-  }
+render() {
+  const { modalVisible } = this.state
+  const { animationType, containerStyle, wrapperStyle, closeStyle } = this.props
+  return (
+    <View>
+      {this.renderButton()}
+      <Modal
+        animationType={animationType}
+        transparent
+        visible={modalVisible}
+        onRequestClose={this.close}
+      >
+        <View style={[styles.constainer, containerStyle]}>
+          <View style={[styles.wrapper, wrapperStyle]}>{this.renderWebview()}</View>
+          <TouchableOpacity
+            onPress={this.close}
+            style={[styles.close, closeStyle]}
+            accessibilityComponentType={'button'}
+            accessibilityTraits={['button']}
+          >
+            {this.renderClose()}
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </View>
+  )
+}
 }
